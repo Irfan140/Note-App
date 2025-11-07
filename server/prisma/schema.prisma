@@ -8,10 +8,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  // Clerk user ID, not your own auto-generated ID
-  id        String   @id
+  id        String   @id // Clerk user ID, not our own auto-generated ID from prisma
   email     String   @unique
   name      String?
   imageUrl  String?
@@ -23,7 +21,7 @@ model Note {
   id        String   @id @default(cuid())
   title     String
   content   String?
-  userId    String
+  userId    String // foreign key
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }

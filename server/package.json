@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/index.js",
-    "db:migrate": "cd prisma && bunx prisma migrate dev --name init"
+    "db:migrate": "cd prisma && bunx prisma migrate dev --name init",
+    "db:test": "cd prisma && bunx prisma db push"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@clerk/express": "^1.7.44",
+    "@prisma/client": "^6.18.0",
     "@types/express": "^5.0.5",
     "express": "^5.1.0"
   }
