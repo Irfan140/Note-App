@@ -1,6 +1,8 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider   = "prisma-client-js"
+  output     = "../generated/client"
+  // Bun has problems running Prisma with default engineType = "library".
+  engineType = "binary"
 }
 
 datasource db {
