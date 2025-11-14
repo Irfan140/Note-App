@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "db:migrate": "cd prisma && bunx prisma migrate dev --name init"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^6.19.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0"
+  }
+}

@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id // Clerk user ID, not our own auto-generated ID from prisma
+  email     String   @unique
+  name      String?
+  imageUrl  String?
+  notes     Note[]
+  createdAt DateTime @default(now())
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  userId    String // foreign key
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
