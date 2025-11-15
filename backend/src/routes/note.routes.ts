@@ -10,6 +10,7 @@ router.use(clerkAuth, attachUserId, ensureUserExists);
 
 router.post("/", noteController.createNote);
 router.get("/", noteController.getNotesByUserId);
+router.get("/:noteId", noteController.getNoteByNoteId);
 router.put("/:noteId", noteController.updateNote);
 
 export default router;

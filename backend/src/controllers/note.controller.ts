@@ -25,6 +25,23 @@ export const getNotesByUserId = async (req: Request, res: Response) => {
   }
 };
 
+// GET SINGLE NOTE
+export const getNoteByNoteId = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const noteId = req.params.noteId;
+    if (!noteId)
+      return res.status(400).json({ error: "Missing noteId parameter" });
+
+    const note = await noteService.getNoteByNoteId(noteId, userId);
+    if (!note) return res.status(404).json({ error: "Note not found" });
+
+    res.status(200).json(note);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch note" });
+  }
+};
+
 export const updateNote = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
