@@ -12,5 +12,6 @@ router.post("/", noteController.createNote);
 router.get("/", noteController.getNotesByUserId);
 router.get("/:noteId", noteController.getNoteByNoteId);
 router.put("/:noteId", noteController.updateNote);
+router.delete("/:noteId", noteController.deleteNote);
 
 export default router;

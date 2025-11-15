@@ -60,3 +60,20 @@ export const updateNote = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to update note" });
   }
 };
+
+export const deleteNote = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const noteId = req.params.noteId;
+    if (!noteId)
+      return res.status(400).json({ error: "Missing noteId parameter" });
+
+    const existing = await noteService.getNoteByNoteId(noteId, userId);
+    if (!existing) return res.status(404).json({ error: "Note not found" });
+
+    await noteService.deleteNote(noteId, userId);
+    res.status(200).json({ message: "Note deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete note" });
+  }
+};
