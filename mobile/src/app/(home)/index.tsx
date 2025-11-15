@@ -4,11 +4,13 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useApi } from "../../lib/api";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const api = useApi();
@@ -39,28 +41,17 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      {/* Top Row */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 20,
-        }}
-      >
-        <Text style={{ fontSize: 28, fontWeight: "700" }}>Your Notes</Text>
+    <SafeAreaView style={styles.container}>
+      {/* Header Row */}
+      <View style={styles.headerRow}>
+        <Text style={styles.heading}>Your Notes</Text>
 
         <TouchableOpacity
           onPress={onLogout}
-          style={{
-            backgroundColor: "#ef4444",
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            borderRadius: 8,
-          }}
+          style={styles.logoutButton}
+          disabled={logoutLoading}
         >
-          <Text style={{ color: "white", fontWeight: "600" }}>
+          <Text style={styles.logoutText}>
             {logoutLoading ? "..." : "Logout"}
           </Text>
         </TouchableOpacity>
@@ -79,20 +70,9 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Link href={`/note/${item.id}`} asChild>
-              <TouchableOpacity
-                style={{
-                  padding: 15,
-                  borderWidth: 1,
-                  borderColor: "#ddd",
-                  borderRadius: 12,
-                  marginBottom: 12,
-                  backgroundColor: "#fff",
-                }}
-              >
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {item.title}
-                </Text>
-                <Text numberOfLines={2} style={{ color: "#555" }}>
+              <TouchableOpacity style={styles.noteCard}>
+                <Text style={styles.noteTitle}>{item.title}</Text>
+                <Text numberOfLines={2} style={styles.noteContent}>
                   {item.content}
                 </Text>
               </TouchableOpacity>
@@ -101,31 +81,78 @@ export default function HomeScreen() {
         />
       )}
 
-      {/* Add Button */}
+      {/* Add Note Button */}
       <Link href="/note/create" asChild>
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#2563eb",
-            padding: 16,
-            borderRadius: 12,
-            position: "absolute",
-            bottom: 20,
-            left: 20,
-            right: 20,
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 16,
-              color: "#fff",
-              fontWeight: "600",
-            }}
-          >
-            + Add Note
-          </Text>
+        <TouchableOpacity style={styles.addButton}>
+          <Text style={styles.addButtonText}>+ Add Note</Text>
         </TouchableOpacity>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  heading: {
+    fontSize: 28,
+    fontWeight: "700",
+  },
+
+  logoutButton: {
+    backgroundColor: "#ef4444",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+
+  logoutText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+
+  noteCard: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 12,
+    marginBottom: 12,
+    backgroundColor: "#fff",
+  },
+
+  noteTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+
+  noteContent: {
+    color: "#555",
+  },
+
+  addButton: {
+    backgroundColor: "#2563eb",
+    padding: 16,
+    borderRadius: 12,
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+
+  addButtonText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
+  },
+});
