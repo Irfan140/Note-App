@@ -9,17 +9,25 @@ import {
 import { useEffect, useState } from "react";
 import { useApi } from "../../lib/api";
 import { Link, useRouter } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const api = useApi();
   const router = useRouter();
   const { signOut } = useAuth();
+  const { user } = useUser(); // <-- Clerk User Info
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [logoutLoading, setLogoutLoading] = useState(false);
+
+  // Create display name logic
+  const displayName =
+    user?.fullName ||
+    user?.firstName ||
+    user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ||
+    "User";
 
   const loadNotes = async () => {
     try {
@@ -42,6 +50,11 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Welcome Banner */}
+      <Text style={styles.welcomeText}>
+        Hello, <Text style={styles.userName}>{displayName}</Text>
+      </Text>
+
       {/* Header Row */}
       <View style={styles.headerRow}>
         <Text style={styles.heading}>Your Notes</Text>
@@ -97,11 +110,22 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
+  welcomeText: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+
+  userName: {
+    fontWeight: "700",
+    color: "#2563eb",
+  },
+
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    marginTop: 10,
   },
 
   heading: {
