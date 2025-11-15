@@ -5,9 +5,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  StyleSheet,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useApi } from "../../lib/api";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NoteDetail() {
   const { id } = useLocalSearchParams();
@@ -48,46 +50,78 @@ export default function NoteDetail() {
 
   if (loading)
     return (
-      <ActivityIndicator
-        size="large"
-        color="#2563eb"
-        style={{ marginTop: 40 }}
-      />
+      <ActivityIndicator size="large" color="#2563eb" style={styles.loading} />
     );
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 28, fontWeight: "700", marginBottom: 10 }}>
-        {note?.title}
-      </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{note?.title}</Text>
 
-      <Text style={{ color: "#555", marginBottom: 25 }}>{note?.content}</Text>
+        <Text style={styles.content}>{note?.content}</Text>
 
-      <Link href={`/note/edit?id=${id}`} asChild>
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#2563eb",
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 10,
-          }}
-        >
-          <Text style={{ color: "#fff", textAlign: "center" }}>Edit</Text>
+        <Link href={`/note/edit?id=${id}`} asChild>
+          <TouchableOpacity style={styles.editBtn}>
+            <Text style={styles.editBtnText}>Edit</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <TouchableOpacity onPress={deleteNote} style={styles.deleteBtn}>
+          <Text style={styles.deleteBtnText}>
+            {deleting ? "Deleting..." : "Delete"}
+          </Text>
         </TouchableOpacity>
-      </Link>
-
-      <TouchableOpacity
-        onPress={deleteNote}
-        style={{
-          backgroundColor: "red",
-          padding: 12,
-          borderRadius: 10,
-        }}
-      >
-        <Text style={{ color: "#fff", textAlign: "center" }}>
-          {deleting ? "Deleting..." : "Delete"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    marginTop: 40,
+  },
+
+  safeArea: {
+    flex: 1,
+    padding: 20,
+  },
+
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    marginBottom: 10,
+  },
+
+  content: {
+    color: "#555",
+    marginBottom: 25,
+  },
+
+  editBtn: {
+    backgroundColor: "#2563eb",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+
+  editBtnText: {
+    color: "#fff",
+    textAlign: "center",
+  },
+
+  deleteBtn: {
+    backgroundColor: "red",
+    padding: 12,
+    borderRadius: 10,
+  },
+
+  deleteBtnText: {
+    color: "#fff",
+    textAlign: "center",
+  },
+});
