@@ -1,18 +1,29 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import React from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useState } from "react";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+
+  // NEW: UI state for showing errors
+  const [error, setError] = useState("");
 
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
+
+    setError(""); // reset error
 
     // Start the sign-in process using the email and password provided
     try {
@@ -21,47 +32,149 @@ export default function Page() {
         password,
       });
 
+      console.log("SIGN_IN_ATTEMPT::", signInAttempt);
+
       // If sign-in process is complete, set the created session as active
       // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
+
+        // For logging the Session ID manually
         console.log("SESSION_ID::", signInAttempt.createdSessionId);
+
         router.replace("/");
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
+    } catch (err: any) {
+      // Clerk sends detailed error messages, so show them to the user
+      console.error("SIGN_IN_ERROR::", JSON.stringify(err, null, 2));
+
+      const message = err?.errors?.[0]?.message || "Something went wrong";
+      setError(message);
     }
   };
 
   return (
-    <View>
-      <Text>Sign in</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Sign in</Text>
+
+      {/*  Error UI Box */}
+      {error !== "" && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
       <TextInput
+        style={styles.input}
         autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
-        onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+        onChangeText={(v) => setEmailAddress(v)}
       />
+
       <TextInput
+        style={styles.input}
         value={password}
         placeholder="Enter password"
         secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
+        onChangeText={(v) => setPassword(v)}
       />
-      <TouchableOpacity onPress={onSignInPress}>
-        <Text>Continue</Text>
+
+      <TouchableOpacity style={styles.button} onPress={onSignInPress}>
+        <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
-      <View style={{ display: "flex", flexDirection: "row", gap: 3 }}>
+
+      <View style={styles.footerRow}>
         <Link href="/sign-up">
-          <Text>Sign up</Text>
+          <Text style={styles.footerLink}>Sign up</Text>
         </Link>
       </View>
     </View>
   );
 }
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#F3F4F6",
+    justifyContent: "center",
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    marginBottom: 32,
+    color: "#111827",
+    textAlign: "center",
+  },
+
+  input: {
+    width: "100%",
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 12,
+    marginBottom: 18,
+    backgroundColor: "#FFFFFF",
+    fontSize: 16,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+
+  button: {
+    backgroundColor: "#2563EB",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 12,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  errorBox: {
+    backgroundColor: "#FEE2E2",
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+
+  errorText: {
+    color: "#B91C1C",
+    fontSize: 14,
+    textAlign: "center",
+    fontWeight: "500",
+  },
+
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 24,
+  },
+
+  footerLink: {
+    color: "#2563EB",
+    fontWeight: "600",
+    fontSize: 15,
+  },
+});
