@@ -9,5 +9,6 @@ const router = Router();
 router.use(clerkAuth, attachUserId, ensureUserExists);
 
 router.post("/", noteController.createNote);
+router.get("/", noteController.getNotesByUserId);
 
 export default router;
