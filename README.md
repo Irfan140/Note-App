@@ -1,5 +1,3 @@
-# Note-App
-
 A full-stack note-taking application built with React Native (Expo), Node.js/Express, and PostgreSQL. Features user authentication via Clerk and a clean, modern interface for creating, editing, and managing notes.
 
 ##  Features
@@ -56,11 +54,18 @@ Note-App/
 
 ## 📷 Screenshots
 
-Here are some sample screens from the mobile app (sourced from `mobile/assets/readme-assets`):
-
-![Home](mobile/assets/readme-assets/1763568124737.jpg) ![Notes List](mobile/assets/readme-assets/1763568124746.jpg) ![Create Note](mobile/assets/readme-assets/1763568124756.jpg)
-
-![Edit Note](mobile/assets/readme-assets/1763568124766.jpg) ![Profile](mobile/assets/readme-assets/1763568124778.jpg) ![Settings](mobile/assets/readme-assets/1763568124789.jpg)
+<table>
+  <tr>
+    <td><img src="mobile/assets/readme-assets/1763568124737.jpg" alt="Home" width="240"/></td>
+    <td><img src="mobile/assets/readme-assets/1763568124746.jpg" alt="Notes List" width="240"/></td>
+    <td><img src="mobile/assets/readme-assets/1763568124756.jpg" alt="Create Note" width="240"/></td>
+  </tr>
+  <tr>
+    <td><img src="mobile/assets/readme-assets/1763568124766.jpg" alt="Edit Note" width="240"/></td>
+    <td><img src="mobile/assets/readme-assets/1763568124778.jpg" alt="Profile" width="240"/></td>
+    <td><img src="mobile/assets/readme-assets/1763568124789.jpg" alt="Settings" width="240"/></td>
+  </tr>
+</table>
 
 
 ## 📦 Installation
