@@ -54,6 +54,14 @@ Note-App/
 ```
 
 
+## 📷 Screenshots
+
+Here are some sample screens from the mobile app (sourced from `mobile/assets/readme-assets`):
+
+![Home](mobile/assets/readme-assets/1763568124737.jpg) ![Notes List](mobile/assets/readme-assets/1763568124746.jpg) ![Create Note](mobile/assets/readme-assets/1763568124756.jpg)
+
+![Edit Note](mobile/assets/readme-assets/1763568124766.jpg) ![Profile](mobile/assets/readme-assets/1763568124778.jpg) ![Settings](mobile/assets/readme-assets/1763568124789.jpg)
+
 
 ## 📦 Installation
 
