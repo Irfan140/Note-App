@@ -16,10 +16,9 @@ export default function Page() {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
 
-  // NEW: UI state for showing errors
+  //  UI state for showing errors
   const [error, setError] = useState("");
 
-  // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
 
@@ -42,12 +41,9 @@ export default function Page() {
 
         router.replace("/");
       } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
-      // Clerk sends detailed error messages, so show them to the user
       console.error("SIGN_IN_ERROR::", JSON.stringify(err, null, 2));
 
       const message = err?.errors?.[0]?.message || "Something went wrong";

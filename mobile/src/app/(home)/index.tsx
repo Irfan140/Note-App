@@ -50,14 +50,12 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Welcome Banner */}
       <Text style={styles.welcomeText}>
         Hello, <Text style={styles.userName}>{displayName}</Text>
       </Text>
 
-      {/* Header Row */}
       <View style={styles.headerRow}>
-        <Text style={styles.heading}>Your Notes</Text>
+        <Text style={styles.heading}>All notes</Text>
 
         <TouchableOpacity
           onPress={onLogout}
@@ -94,10 +92,9 @@ export default function HomeScreen() {
         />
       )}
 
-      {/* Add Note Button */}
       <Link href="/note/create" asChild>
         <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add Note</Text>
+          <Text style={styles.addButtonText}>Add Note</Text>
         </TouchableOpacity>
       </Link>
     </SafeAreaView>
@@ -129,8 +126,8 @@ const styles = StyleSheet.create({
   },
 
   heading: {
-    fontSize: 28,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "500",
   },
 
   logoutButton: {
