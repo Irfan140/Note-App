@@ -12,7 +12,7 @@ export default function SignUpScreen() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
 
-  //  Error handling
+  // For  Error handling
   const [friendlyError, setFriendlyError] = useState("");
 
   const onSignUpPress = async () => {
@@ -35,7 +35,6 @@ export default function SignUpScreen() {
       // Clear friendly error
       setFriendlyError("");
     } catch (err: any) {
-      // KEEPING YOUR LOG INTACT
       console.error(JSON.stringify(err, null, 2));
 
       // friendly message
@@ -61,9 +60,6 @@ export default function SignUpScreen() {
         await setActive({ session: signUpAttempt.createdSessionId });
         router.replace("/");
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-
         console.error(JSON.stringify(signUpAttempt, null, 2));
 
         setFriendlyError("Invalid verification code. Please try again.");
