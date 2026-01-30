@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/index.ts",
+    "db:generate": "cd prisma && bunx prisma generate",
     "db:migrate": "cd prisma && bunx prisma migrate dev --name init"
   },
   "devDependencies": {
