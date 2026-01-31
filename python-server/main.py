@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
@@ -26,14 +26,14 @@ class SummarizeRequest(BaseModel):
 class SummarizeResponse(BaseModel):
     summary: str
 
-# Initialize modern OpenAI model 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
+# Initialize Groq model
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
     temperature=0.0,
-    api_key=os.getenv("OPENAI_API_KEY"),
+    api_key=os.getenv("GROQ_API_KEY"),
 )
 
-# Modern LCEL chain: prompt | model | output_parser
+#  LCEL chain: prompt | model | output_parser
 prompt = ChatPromptTemplate.from_template(
     """You are a helpful assistant that summarizes notes concisely.
     
@@ -57,7 +57,7 @@ def health_check():
 @app.post("/summarize", response_model=SummarizeResponse)
 async def summarize_note(request: SummarizeRequest):
     """
-    Summarize note content using modern LangChain + OpenAI
+    Summarize note content using modern LangChain + Groq
     """
     try:
         if not request.content or len(request.content.strip()) < 10:
@@ -66,7 +66,7 @@ async def summarize_note(request: SummarizeRequest):
                 detail="Content is too short to summarize"
             )
         
-        # Modern .invoke() with dict input
+        
         result = summarize_chain.invoke({"text": request.content})
         
         return SummarizeResponse(summary=result.strip())
