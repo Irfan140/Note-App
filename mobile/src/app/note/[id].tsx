@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   Alert,
   StyleSheet,
+  ScrollView,
+  Modal,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useApi } from "../../lib/api";
@@ -19,6 +21,9 @@ export default function NoteDetail() {
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [summarizing, setSummarizing] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
 
   const load = async () => {
     try {
@@ -48,6 +53,22 @@ export default function NoteDetail() {
     ]);
   };
 
+  const summarizeNote = async () => {
+    try {
+      setSummarizing(true);
+      const res = await api.post(`/notes/${id}/summarize`);
+      setSummary(res.data.summary);
+      setShowSummary(true);
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.error || "Failed to summarize note"
+      );
+    } finally {
+      setSummarizing(false);
+    }
+  };
+
   if (loading)
     return (
       <ActivityIndicator size="large" color="#2563eb" style={styles.loading} />
@@ -55,10 +76,20 @@ export default function NoteDetail() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style={styles.title}>{note?.title}</Text>
 
         <Text style={styles.content}>{note?.content}</Text>
+
+        <TouchableOpacity
+          onPress={summarizeNote}
+          style={styles.summarizeBtn}
+          disabled={summarizing}
+        >
+          <Text style={styles.summarizeBtnText}>
+            {summarizing ? "Summarizing..." : "✨ Summarize with AI"}
+          </Text>
+        </TouchableOpacity>
 
         <Link href={`/note/edit?id=${id}`} asChild>
           <TouchableOpacity style={styles.editBtn}>
@@ -71,7 +102,30 @@ export default function NoteDetail() {
             {deleting ? "Deleting..." : "Delete"}
           </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
+
+      {/* Summary Modal */}
+      <Modal
+        visible={showSummary}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowSummary(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>📝 AI Summary</Text>
+            <ScrollView style={styles.summaryScroll}>
+              <Text style={styles.summaryText}>{summary}</Text>
+            </ScrollView>
+            <TouchableOpacity
+              onPress={() => setShowSummary(false)}
+              style={styles.closeBtn}
+            >
+              <Text style={styles.closeBtnText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -83,7 +137,6 @@ const styles = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    padding: 20,
   },
 
   container: {
@@ -100,6 +153,21 @@ const styles = StyleSheet.create({
   content: {
     color: "#555",
     marginBottom: 25,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+
+  summarizeBtn: {
+    backgroundColor: "#8b5cf6",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+
+  summarizeBtnText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "600",
   },
 
   editBtn: {
@@ -118,10 +186,58 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     padding: 12,
     borderRadius: 10,
+    marginBottom: 20,
   },
 
   deleteBtnText: {
     color: "#fff",
     textAlign: "center",
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
+    width: "100%",
+    maxHeight: "80%",
+  },
+
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+
+  summaryScroll: {
+    maxHeight: 400,
+  },
+
+  summaryText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#333",
+    marginBottom: 20,
+  },
+
+  closeBtn: {
+    backgroundColor: "#2563eb",
+    padding: 12,
+    borderRadius: 10,
+  },
+
+  closeBtnText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "600",
   },
 });
