@@ -1,10 +1,12 @@
-A full-stack note-taking application built with React Native (Expo), Node.js/Express, and PostgreSQL. Features user authentication via Clerk and a clean, modern interface for creating, editing, and managing notes.
+A full-stack note-taking application built with React Native (Expo), Node.js/Express, and PostgreSQL. Features user authentication via Clerk, AI-powered note summarization via a Python microservice, and a clean, modern interface for creating, editing, and managing notes.
 
 ##  Features
 
 - **User Authentication**: Secure authentication powered by Clerk
 - **Create & Edit Notes**: Intuitive interface for note management
+- **AI Note Summarization**: Summarize notes using LLaMA 3.3 via Groq, powered by a FastAPI microservice with LangChain
 - **Real-time Sync**: Notes are synced with a PostgreSQL database
+- **Microservice Architecture**: Separate Python AI service communicates with the Express backend via REST
 - **Cross-Platform**: Mobile app runs on iOS, Android, and Web
 - **Type-Safe**: Full TypeScript implementation across frontend and backend
 - **Modern Stack**: Built with latest technologies and best practices
@@ -17,6 +19,12 @@ A full-stack note-taking application built with React Native (Expo), Node.js/Exp
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: Clerk Express SDK
 
+### Python  Server
+- **Framework**: FastAPI
+- **LLM**: LLaMA 3.3 70B via Groq
+- **AI Orchestration**: LangChain (LCEL chains)
+- **Validation**: Pydantic
+
 ### Mobile (Frontend)
 - **Framework**: React Native with Expo
 - **Navigation**: Expo Router
@@ -27,7 +35,7 @@ A full-stack note-taking application built with React Native (Expo), Node.js/Exp
 
 ```
 Note-App/
-├── backend/                 # Backend API server
+├── backend/                 # Express API server
 │   ├── src/
 │   │   ├── controllers/    # Route controllers
 │   │   ├── services/       # Business logic
@@ -38,6 +46,16 @@ Note-App/
 │   ├── prisma/
 │   │   └── schema.prisma   # Database schema
 │   └── package.json
+│
+├── python-server/           # AI Summarization microservice
+│   ├── src/
+│   │   ├── config/         # Environment & settings
+│   │   ├── routers/        # FastAPI route handlers
+│   │   ├── services/       # LLM chain logic
+│   │   ├── models/         # Pydantic schemas
+│   │   └── main.py         # App entry point
+│   ├── requirements.txt
+│   └── pyproject.toml
 │
 └── mobile/                  # React Native mobile app
     ├── src/
@@ -54,16 +72,21 @@ Note-App/
 
 ## 📷 Screenshots
 
-<table>
+<table align="center">
   <tr>
-    <td><img src="mobile/assets/readme-assets/1763568124737.jpg" alt="Home" width="240"/></td>
-    <td><img src="mobile/assets/readme-assets/1763568124746.jpg" alt="Notes List" width="240"/></td>
-    <td><img src="mobile/assets/readme-assets/1763568124756.jpg" alt="Create Note" width="240"/></td>
+    <td align="center"><img src="mobile/assets/readme-assets/SignInScreen.jpg" alt="Sign In" width="240"/><br/><b>Sign In</b></td>
+    <td align="center"><img src="mobile/assets/readme-assets/SignUpScreen.jpg" alt="Sign Up" width="240"/><br/><b>Sign Up</b></td>
+    <td align="center"><img src="mobile/assets/readme-assets/HomeScreen.jpg" alt="Home Screen" width="240"/><br/><b>Home</b></td>
   </tr>
   <tr>
-    <td><img src="mobile/assets/readme-assets/1763568124766.jpg" alt="Edit Note" width="240"/></td>
-    <td><img src="mobile/assets/readme-assets/1763568124778.jpg" alt="Profile" width="240"/></td>
-    <td><img src="mobile/assets/readme-assets/1763568124789.jpg" alt="Settings" width="240"/></td>
+    <td align="center"><img src="mobile/assets/readme-assets/Create_Note.jpg" alt="Create Note" width="240"/><br/><b>Create Note</b></td>
+    <td align="center"><img src="mobile/assets/readme-assets/View_Note.jpg" alt="View Note" width="240"/><br/><b>View Note</b></td>
+    <td align="center"><img src="mobile/assets/readme-assets/Edit_Note.jpg" alt="Edit Note" width="240"/><br/><b>Edit Note</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="mobile/assets/readme-assets/Note_Summarizing.jpg" alt="Note Summarizing" width="240"/><br/><b>Summarizing</b></td>
+    <td align="center"><img src="mobile/assets/readme-assets/AI_Summary.jpg" alt="AI Summary" width="240"/><br/><b>AI Summary</b></td>
+    <td></td>
   </tr>
 </table>
 
@@ -94,7 +117,26 @@ bun run dev
 
 The backend server will start on `http://localhost:3000`
 
-### 3. Mobile App Setup
+### 3. Python AI Server Setup
+
+```bash
+cd python-server
+
+# Create virtual environment
+uv init
+uv venv
+source .venv/bin/activate
+
+# Install dependencies
+uv pip install -r requirements.txt
+
+# Start the AI server
+uvicorn src.main:app --reaload
+```
+
+The python server will start on `http://localhost:8000`
+
+### 4. Mobile App Setup
 
 ```bash
 cd mobile
@@ -112,6 +154,13 @@ npm start
 ```bash
 cd backend
 bun run dev
+```
+
+### Python  Server
+```bash
+cd python-server
+source .venv/bin/activate
+uvicorn src.main:app --reaload
 ```
 
 ### Mobile App
@@ -151,13 +200,20 @@ The application uses two main models:
 DATABASE_URL="postgresql://user:password@localhost:5432/noteapp"
 CLERK_PUBLISHABLE_KEY="pk_test_..."
 CLERK_SECRET_KEY="sk_test_..."
-PORT=3000
+AI_SERVICE_URL="http://localhost:8000"
+PORT=5000
+```
+
+### Python AI Server (.env)
+```env
+GROQ_API_KEY="gsk_..."
+PORT=8000
 ```
 
 ### Mobile (.env)
 ```env
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-EXPO_PUBLIC_API_URL="http://localhost:3000"
+EXPO_PUBLIC_API_URL="http://<your-local-ip>:5000"
 ```
 
 ## 📱 Available Scripts
@@ -175,14 +231,22 @@ EXPO_PUBLIC_API_URL="http://localhost:3000"
 
 ## 🏗️ API Endpoints
 
-### Notes API
+### Notes API (Express Backend — port 5000)
 - `GET /notes` - Get all notes for authenticated user
 - `GET /notes/:id` - Get a specific note
 - `POST /notes` - Create a new note
 - `PUT /notes/:id` - Update a note
 - `DELETE /notes/:id` - Delete a note
+- `POST /notes/:id/summarize` - Summarize a note using AI
 
 All endpoints require Clerk authentication.
+
+### AI Summarization API (Python Server — port 8000)
+- `GET /` - Health check
+- `GET /health` - Service health status
+- `POST /summarize` - Summarize text content
+
+The Express backend calls the Python server internally — the mobile app only talks to the Express backend.
 
 ## 🤝 Contributing
 
@@ -204,11 +268,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
   - iOS App Store submission (future consideration)
 
 ### AI-Powered Features
-- **Smart Note Summaries**: Develop a separate Flask microservice that leverages Large Language Models (LLMs) to:
-  - Generate intelligent summaries of user notes
-  - Provide contextual insights and key point extraction
-  - Display AI-generated summaries in the mobile app
-  - Integrate with the main backend via REST API
+- ~~**Smart Note Summaries**: Develop a separate microservice that leverages LLMs~~ ✅ **Done!** Built with FastAPI + LangChain + Groq (LLaMA 3.3 70B)
+- **More AI Features** (planned):
+  - Smart tagging and auto-categorization
+  - Contextual insights and key point extraction
+  - Search notes using natural language
 
 ### UI/UX Improvements
 - Enhanced note editor with rich text formatting
