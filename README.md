@@ -1,6 +1,8 @@
-A full-stack note-taking application built with React Native (Expo), Node.js/Express, and PostgreSQL. Features user authentication via Clerk, AI-powered note summarization via a Python microservice, and a clean, modern interface for creating, editing, and managing notes.
+# NoteFlow
 
-##  Features
+A full-stack note-taking application built with React Native (Expo), Bun + Express, and PostgreSQL. It includes Clerk authentication and AI-powered note summarization via a FastAPI microservice (Groq + LangChain).
+
+## Features
 
 - **User Authentication**: Secure authentication powered by Clerk
 - **Create & Edit Notes**: Intuitive interface for note management
@@ -19,7 +21,7 @@ A full-stack note-taking application built with React Native (Expo), Node.js/Exp
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: Clerk Express SDK
 
-### Python  Server
+### Python Server
 - **Framework**: FastAPI
 - **LLM**: LLaMA 3.3 70B via Groq
 - **AI Orchestration**: LangChain (LCEL chains)
@@ -91,87 +93,66 @@ Note-App/
 </table>
 
 
-## 📦 Installation
+## ✅ Prerequisites
 
-### 1. Clone the Repository
+- Docker Desktop
+- Node.js + npm (for the Expo mobile app)
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Irfan140/Note-App.git
 cd Note-App
 ```
 
-### 2. Backend Setup
+### 2. Run with Docker (recommended)
+
+1) Create your env files (see “Environment Variables” below):
+
+- `backend/.env` (Docker Compose)
+- `python-server/.env`
+
+2) Start services:
 
 ```bash
-cd backend
-
-# Install dependencies
-bun install
-
-# Run database migrations
-bun run db:migrate
-
-# Start the development server
-bun run dev
+docker compose up -d
 ```
 
-The backend server will start on `http://localhost:3000`
-
-### 3. Python AI Server Setup
+3) Run database migrations:
 
 ```bash
-cd python-server
-
-# Create virtual environment
-uv init
-uv venv
-source .venv/bin/activate
-
-# Install dependencies
-uv pip install -r requirements.txt
-
-# Start the AI server
-uvicorn src.main:app --reaload
+docker compose exec api bun run db:migrate
 ```
 
-The python server will start on `http://localhost:8000`
+4) URLs:
 
-### 4. Mobile App Setup
+- API: `http://localhost:5000`
+- AI service: `http://localhost:8000`
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+Reset database volume:
+
+```bash
+docker compose down -v
+```
+
+### 3. Run the mobile app (Expo)
+
+1) Create `mobile/.env` (see “Environment Variables” below)
+
+2) Start Expo:
 
 ```bash
 cd mobile
-
-# Install dependencies
 npm install
-
-# Start the Expo development server
 npm start
-```
-
-## 🚀 Running the Application
-
-### Backend
-```bash
-cd backend
-bun run dev
-```
-
-### Python  Server
-```bash
-cd python-server
-source .venv/bin/activate
-uvicorn src.main:app --reaload
-```
-
-### Mobile App
-```bash
-cd mobile
-npm start
-
-# Then choose your platform:
-# Press 'a' for Android
-# Press 'i' for iOS
-# Press 'w' for Web
 ```
 
 ## 🗄️ Database Schema
@@ -195,12 +176,12 @@ The application uses two main models:
 
 ## 🔐 Environment Variables
 
-### Backend (.env)
+### Backend (.env) (Docker Compose)
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/noteapp"
+DATABASE_URL="postgresql://postgres:postgres@db:5432/noteapp"
 CLERK_PUBLISHABLE_KEY="pk_test_..."
 CLERK_SECRET_KEY="sk_test_..."
-AI_SERVICE_URL="http://localhost:8000"
+AI_SERVICE_URL="http://ai:8000"
 PORT=5000
 ```
 
@@ -213,7 +194,12 @@ PORT=8000
 ### Mobile (.env)
 ```env
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-EXPO_PUBLIC_API_URL="http://<your-local-ip>:5000"
+
+# Docker Compose backend:
+EXPO_PUBLIC_API_URL="http://localhost:5000"
+
+# Physical phone (same network):
+# EXPO_PUBLIC_API_URL="http://<your-local-ip>:5000"
 ```
 
 ## 📱 Available Scripts
@@ -231,7 +217,11 @@ EXPO_PUBLIC_API_URL="http://<your-local-ip>:5000"
 
 ## 🏗️ API Endpoints
 
-### Notes API (Express Backend — port 5000)
+### Notes API (Express Backend)
+
+- Base URL (Docker Compose): `http://localhost:5000`
+
+Endpoints:
 - `GET /notes` - Get all notes for authenticated user
 - `GET /notes/:id` - Get a specific note
 - `POST /notes` - Create a new note
@@ -248,48 +238,6 @@ All endpoints require Clerk authentication.
 
 The Express backend calls the Python server internally — the mobile app only talks to the Express backend.
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-##  Future Plans
-
-### Deployment
-- **Backend Deployment**: Deploy the Express.js backend to a cloud platform (e.g., Railway, Render, or AWS)
-- **Mobile App Distribution**: 
-  - Publish the app to Google Play Store
-  - Create APK builds for testing and distribution
-  - iOS App Store submission (future consideration)
-
-### AI-Powered Features
-- ~~**Smart Note Summaries**: Develop a separate microservice that leverages LLMs~~ ✅ **Done!** Built with FastAPI + LangChain + Groq (LLaMA 3.3 70B)
-- **More AI Features** (planned):
-  - Smart tagging and auto-categorization
-  - Contextual insights and key point extraction
-  - Search notes using natural language
-
-### UI/UX Improvements
-- Enhanced note editor with rich text formatting
-- Dark mode support
-- Improved navigation and user experience
-- Better visual design and animations
-- Search and filter functionality for notes
-- Tags and categories for better organization
-
-### Security Enhancements
-- Implement rate limiting on API endpoints
-- Add data encryption for sensitive note content
-- Enhanced input validation and sanitization
-- Implement proper CORS policies
-- Add logging and monitoring for security events
-- Regular security audits and dependency updates
-- End-to-end encryption for notes (optional)
 
 ## 👤 Author
 
