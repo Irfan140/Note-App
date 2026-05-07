@@ -2,30 +2,30 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: noteapp
+      POSTGRES_DB: noteflow
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  ai:
+  ai-service:
     build:
-      context: ./python-server
+      context: ./ai-service
     env_file:
-      - ./python-server/.env
+      - ./ai-service/.env
     ports:
       - "8000:8000"
 
   api:
-    build:
-      context: ./backend
+    build:  
+      context: ./api
     env_file:
-      - ./backend/.env
+      - ./api/.env
     ports:
       - "5000:5000"
     depends_on:
       - db
-      - ai
+      - ai-service
 
 volumes:
   db_data:
