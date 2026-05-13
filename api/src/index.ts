@@ -1,3 +1,9 @@
+import dotenv from "dotenv"
+// for correctly loading .env files in development and production environments
+dotenv.config({
+  path: `.env.${process.env.NODE_ENV}`
+})
+
 import app from "./app";
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
