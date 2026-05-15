@@ -7,9 +7,9 @@ const app = express();
 app.use(express.json());
 app.use(clerkMiddleware());
 
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
-    message: "API hit",
+    message: "API is healthy",
   });
 });
 

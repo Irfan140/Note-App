@@ -6,9 +6,9 @@ from src.services.summarize import summarize_chain
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/health")
 def read_root():
-    return {"message": "Note Summarization API is running"}
+    return {"message": "health check successful"}
 
 
 @router.get("/health")
